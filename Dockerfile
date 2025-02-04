@@ -21,9 +21,9 @@ RUN sed -i s/deb.debian.org/mirrors.ustc.edu.cn/g /etc/apt/sources.list.d/debian
     rm -rf /var/cache/* /var/log/apt/* /tmp/*
 
 RUN mkdir -p /tmp/install && \
-    wget --no-check-certificate -c -O /tmp/install/Moonlight-6.1.0-x86_64.AppImage https://ghfast.top/https://github.com/moonlight-stream/moonlight-qt/releases/download/v6.1.0/Moonlight-6.1.0-x86_64.AppImage && \
-    chmod +x /tmp/install/Moonlight-6.1.0-x86_64.AppImage && \
     cd /tmp/install && \
+    wget --no-check-certificate -c -O Moonlight-6.1.0-x86_64.AppImage https://ghfast.top/https://github.com/moonlight-stream/moonlight-qt/releases/download/v6.1.0/Moonlight-6.1.0-x86_64.AppImage && \
+    chmod +x Moonlight-6.1.0-x86_64.AppImage && \
     ./Moonlight-6.1.0-x86_64.AppImage --appimage-extract && \
     cp squashfs-root/usr/* /usr/ -r && \
     rm -rf /tmp/install
