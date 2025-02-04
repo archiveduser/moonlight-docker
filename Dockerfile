@@ -1,14 +1,10 @@
-FROM debian:11
+FROM debian:12
 
-LABEL maintainer="Tomohisa Kusano <siomiz@gmail.com>"
+LABEL maintainer="dev <dev@example.com>"
 
 ENV VNC_SCREEN_SIZE=1920x1080
 
-COPY copyables /
-
-# Update packages, install essential dependencies, and clean up
-RUN sed -i s/deb.debian.org/mirrors.ustc.edu.cn/g /etc/apt/sources.list &&\
-    sed -i s/security.debian.org/mirrors.ustc.edu.cn/g /etc/apt/sources.list &&\
+RUN sed -i s/deb.debian.org/mirrors.ustc.edu.cn/g /etc/apt/sources.list.d/debian.sources &&\
     apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get upgrade -y && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -16,39 +12,33 @@ RUN sed -i s/deb.debian.org/mirrors.ustc.edu.cn/g /etc/apt/sources.list &&\
     fonts-noto-cjk \
     pulseaudio \
     supervisor \
-    libfuse-dev \
+    xvfb \
     x11vnc \
-    fluxbox \
-    eterm \
+    libegl1-mesa \
     wget && \
     rm -rf /var/lib/apt/lists/* && \
     apt-get clean && \
     rm -rf /var/cache/* /var/log/apt/* /tmp/*
 
-# Install Latest Google Chrome and Chrome Remote Desktop
-RUN wget --no-check-certificate -c -O /tmp/Moonlight-6.1.0-x86_64.AppImage https://proxy.lishichen.cn/https://github.com/moonlight-stream/moonlight-qt/releases/download/v6.1.0/Moonlight-6.1.0-x86_64.AppImage && \
-    chmod +x /tmp/Moonlight-6.1.0-x86_64.AppImage
+RUN mkdir -p /tmp/install && \
+    wget --no-check-certificate -c -O /tmp/install/Moonlight-6.1.0-x86_64.AppImage https://ghfast.top/https://github.com/moonlight-stream/moonlight-qt/releases/download/v6.1.0/Moonlight-6.1.0-x86_64.AppImage && \
+    chmod +x /tmp/install/Moonlight-6.1.0-x86_64.AppImage && \
+    cd /tmp/install && \
+    ./Moonlight-6.1.0-x86_64.AppImage --appimage-extract && \
+    cp squashfs-root/usr/* /usr/ -r && \
+    rm -rf /tmp/install
 
-# Configure the environment
-RUN useradd -m -G chrome-remote-desktop,pulse-access chrome && \
-    usermod -s /bin/bash chrome && \
-    ln -s /crdonly /usr/local/sbin/crdonly && \
-    ln -s /update /usr/local/sbin/update && \
-    mkdir -p /home/chrome/.config/chrome-remote-desktop /home/chrome/.fluxbox && \
-    echo ' \n\
-       session.screen0.toolbar.visible:        false\n\
-       session.screen0.fullMaximization:       true\n\
-       session.screen0.maxDisableResize:       true\n\
-       session.screen0.maxDisableMove: true\n\
-       session.screen0.defaultDeco:    NONE\n\
-    ' >> /home/chrome/.fluxbox/init && \
-    chown -R chrome:chrome /home/chrome/.config /home/chrome/.fluxbox
 
-USER chrome
+RUN useradd -m -G pulse-access moonlight && \
+    usermod -s /bin/bash moonlight
 
-VOLUME ["/home/chrome"]
+COPY copyables /
 
-WORKDIR /home/chrome
+USER moonlight
+
+VOLUME ["/home/moonlight"]
+
+WORKDIR /home/moonlight
 
 EXPOSE 5900
 

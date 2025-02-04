@@ -6,7 +6,7 @@ export X11VNC_AUTH="-nopw"
 
 # look for VNC password file in order (first match is used)
 passwd_files=(
-  /home/chrome/.vnc/passwd
+  /home/moonlight/.vnc/passwd
   /run/secrets/vncpasswd
 )
 
@@ -23,15 +23,14 @@ if [[ "$VNC_PASSWORD" != "" ]]; then
 fi
 
 # make sure .config dir exists
-mkdir -p /home/chrome/.config
-chown chrome:chrome /home/chrome/.config
+mkdir -p /home/moonlight/.config
+chown moonlight:moonlight /home/moonlight/.config
 
-# set sizes for both VNC screen & Chrome window
+# set sizes for both VNC screen & moonlight window
 : ${VNC_SCREEN_SIZE:='1024x768'}
 IFS='x' read SCREEN_WIDTH SCREEN_HEIGHT <<< "${VNC_SCREEN_SIZE}"
 export VNC_SCREEN="${SCREEN_WIDTH}x${SCREEN_HEIGHT}x24"
-export CHROME_WINDOW_SIZE="${SCREEN_WIDTH},${SCREEN_HEIGHT}"
+export MOONLIGHT_WINDOW_SIZE="${SCREEN_WIDTH},${SCREEN_HEIGHT}"
 
-export CHROME_OPTS="${CHROME_OPTS_OVERRIDE:- --user-data-dir --no-sandbox --window-position=0,0 --force-device-scale-factor=1 --disable-dev-shm-usage}"
 
 exec "$@"
