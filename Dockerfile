@@ -34,7 +34,7 @@ RUN useradd -m -G pulse-access moonlight && \
 
 COPY copyables /
 
-USER moonlight
+USER root
 
 VOLUME ["/home/moonlight"]
 
